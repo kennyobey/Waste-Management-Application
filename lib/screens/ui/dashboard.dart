@@ -79,7 +79,7 @@ class _DashboardState extends State<Dashboard> {
                       buildButton(
                           onPress: () {
                             setState(() {
-                              currentScreen = const Bayarxn();
+                              currentScreen = const BayarX();
                               selectedIndex = 3;
                             });
                           },
@@ -148,7 +148,7 @@ class _DashState extends State<Dash> {
     const HomePage(),
     const Card(),
     const Account(),
-    const Bayarxn()
+    const BayarX()
   ];
 
   void _onItemTapped(int index) {
@@ -167,9 +167,8 @@ class _DashState extends State<Dash> {
           topLeft: Radius.circular(20),
         ),
         child: BottomNavigationBar(
-          elevation: 3,
           //add background color
-          backgroundColor: AppColor().primaryColor,
+          // backgroundColor: AppColor().primaryColor,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: SvgPicture.asset(

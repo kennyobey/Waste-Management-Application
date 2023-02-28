@@ -17,7 +17,7 @@ class _AccountState extends State<Account> with SingleTickerProviderStateMixin {
   TabController? _tabController;
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
@@ -70,7 +70,12 @@ class _AccountState extends State<Account> with SingleTickerProviderStateMixin {
                 weight: FontWeight.w600,
               ),
               CustomText(
-                title: 'Account',
+                title: 'Transactions',
+                size: 18,
+                weight: FontWeight.w600,
+              ),
+              CustomText(
+                title: '',
                 size: 18,
                 weight: FontWeight.w600,
               ),
@@ -82,10 +87,7 @@ class _AccountState extends State<Account> with SingleTickerProviderStateMixin {
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                AccountPage(),
-                AccountPage(),
-              ],
+              children: const [AccountPage(), AccountPage(), EmptyPage()],
             ),
           ),
           const Gap(20),
@@ -129,31 +131,40 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 const Gap(10),
                 Container(
-                  width: 200,
-                  color: Colors.purple[500],
+                  width: 201,
+                  height: 117,
+                  decoration: BoxDecoration(
+                      color: AppColor().primaryGreen,
+                      borderRadius: BorderRadius.circular(8)),
                   child: const Center(
                       child: Text(
-                    'Item 2',
+                    'Item 1',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   )),
                 ),
                 const Gap(10),
                 Container(
-                  width: 200,
-                  color: Colors.purple[400],
+                  width: 201,
+                  height: 117,
+                  decoration: BoxDecoration(
+                      color: AppColor().primaryGreen,
+                      borderRadius: BorderRadius.circular(8)),
                   child: const Center(
                       child: Text(
-                    'Item 3',
+                    'Item 1',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   )),
                 ),
                 const Gap(10),
                 Container(
-                  width: 200,
-                  color: Colors.purple[300],
+                  width: 201,
+                  height: 117,
+                  decoration: BoxDecoration(
+                      color: AppColor().primaryGreen,
+                      borderRadius: BorderRadius.circular(8)),
                   child: const Center(
                       child: Text(
-                    'Item 4',
+                    'Item 1',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   )),
                 ),
@@ -326,5 +337,19 @@ class _AccountPageState extends State<AccountPage> {
         ),
       ],
     );
+  }
+}
+
+class EmptyPage extends StatefulWidget {
+  const EmptyPage({super.key});
+
+  @override
+  State<EmptyPage> createState() => _EmptyPageState();
+}
+
+class _EmptyPageState extends State<EmptyPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
