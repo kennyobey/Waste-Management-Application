@@ -1,2 +1,2 @@
-# halal_design
+# WasteManagement App
  A UI sample design for fintech 
