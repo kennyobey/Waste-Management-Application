@@ -129,8 +129,6 @@ class Dash extends StatefulWidget {
 
 class _DashState extends State<Dash> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {

@@ -2,16 +2,13 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/ui/auth_screen/account_type.dart';
-import 'package:halal_design/screens/ui/auth_screen/sign_up.dart';
-import 'package:halal_design/screens/ui/dashboard.dart';
 import 'package:halal_design/screens/widget/button_widget.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
-import 'package:halal_design/screens/widget/page_indicator.dart';
+
 
 class Onboarding extends StatefulWidget {
   const Onboarding({Key? key}) : super(key: key);

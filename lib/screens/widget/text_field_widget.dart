@@ -93,6 +93,7 @@ class CustomTextField extends StatelessWidget {
             (value) {
               if (value == null || value.isEmpty) {
                 return validatorText;
+              // ignore: unnecessary_null_comparison
               } else if (value != null) {
                 return null;
               }

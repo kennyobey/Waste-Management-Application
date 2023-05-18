@@ -4,7 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
 
-import 'home.dart';
+
 
 class Account extends StatefulWidget {
   const Account({super.key});

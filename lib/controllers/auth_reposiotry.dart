@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:halal_design/di/api_link.dart';
 import 'package:halal_design/di/shared_pref.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:halal_design/models/sign_in_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
@@ -80,7 +79,6 @@ class AuthRepository extends GetxController {
   late final confirmPasswordController = TextEditingController();
   late final otpPin = TextEditingController();
   late final userIdController = TextEditingController();
-  
 
   final _authStatus = AuthStatus.empty.obs;
   final _signInStatus = SignInStatus.empty.obs;
