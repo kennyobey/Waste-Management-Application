@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.maybeOf(context)?.size.width,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: AppColor().primaryPurple),
+                      color: AppColor().primaryColorGreen),
                   child: Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 22, vertical: 8),

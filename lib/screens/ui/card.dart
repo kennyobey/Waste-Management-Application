@@ -16,7 +16,7 @@ class _CardState extends State<Card> {
   Widget build(BuildContext context) {
     print("CaRD");
     return Scaffold(
-      backgroundColor: AppColor().primaryColor,
+      backgroundColor: AppColor().primaryColorPurple,
       body: Center(
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
