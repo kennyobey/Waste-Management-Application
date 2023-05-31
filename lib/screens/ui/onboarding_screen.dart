@@ -6,9 +6,9 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/ui/auth_screen/account_type.dart';
+import 'package:halal_design/screens/ui/auth_screen/sign_in.dart';
 import 'package:halal_design/screens/widget/button_widget.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
-
 
 class Onboarding extends StatefulWidget {
   const Onboarding({Key? key}) : super(key: key);
@@ -194,7 +194,7 @@ class _OnboardingState extends State<Onboarding> {
                                     Gap(Get.height * 0.02),
                                     CustomFillButton(
                                       onTap: () {
-                                        //  Get.off(() => const LoginPage());
+                                        Get.off(() => const LoginPage());
                                         // Get.snackbar(
                                         //   'Alert',
                                         //   'Please choose an account type to proceed!',

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:halal_design/controllers/auth_reposiotry.dart';
 import 'package:halal_design/screens/constants/color.dart';
+import 'package:halal_design/screens/ui/auth_screen/sign_in.dart';
 import 'package:halal_design/screens/ui/auth_screen/sign_up.dart';
 import 'package:halal_design/screens/widget/button_widget.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
@@ -231,7 +232,7 @@ class _AccountTypeState extends State<AccountType> {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          //  Get.to(() => const LoginPage());
+                            Get.to(() => const LoginPage());
                         },
                     ),
                   ],
@@ -239,31 +240,7 @@ class _AccountTypeState extends State<AccountType> {
                 textAlign: TextAlign.center,
               ),
             ),
-            // TabBar(
-            //   indicatorColor: Colors.transparent,
-            //   tabs: [
-
-            //     const CustomText(
-            //       title: '',
-            //       size: 18,
-            //       weight: FontWeight.w600,
-            //     ),
-            //   ],
-            //   controller: _tabController,
-            //   indicatorSize: TabBarIndicatorSize.tab,
-            // ),
-            const Gap(20),
-            // Expanded(
-            //   child: TabBarView(
-            //     controller: _tabController,
-            //     children: const [
-            //       IndividualAccount(),
-            //       BusinessAccount(),
-            //       EmptyPage()
-            //     ],
-            //   ),
-            // ),
-            const Gap(20),
+           
           ],
         ),
       ),

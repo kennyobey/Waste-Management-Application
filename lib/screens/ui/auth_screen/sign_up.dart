@@ -1,6 +1,6 @@
 import 'dart:io';
 
-
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -10,7 +10,9 @@ import 'package:halal_design/controllers/auth_reposiotry.dart';
 import 'package:halal_design/models/sign_in_model.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/function/function.dart';
+import 'package:halal_design/screens/ui/auth_screen/sign_in.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
+import 'package:halal_design/screens/widget/loading.dart';
 import 'package:halal_design/screens/widget/text_field_widget.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
@@ -22,6 +24,8 @@ class SignUpEmail extends StatefulWidget {
 }
 
 class _SignUpEmailState extends State<SignUpEmail> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final authController = Get.put(AuthRepository());
   bool isHiddenPassword = true;
   bool? isChecked = false;
   late bool passRequirementMet;
@@ -53,8 +57,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    final authController = Get.put(AuthRepository());
+    print(authController.accountType.value);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -96,7 +99,8 @@ class _SignUpEmailState extends State<SignUpEmail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          title: 'Provide your email',
+                          title:
+                              'Sign Up as ${authController.accountType.value.toUpperCase()}',
                           color: AppColor().primaryDark,
                           size: 22,
                           weight: FontWeight.w900,
@@ -122,7 +126,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                 ),
                 Gap(Get.height * 0.01),
                 CustomTextField(
-                   textEditingController: authController.fNameController,
+                  textEditingController: authController.fNameController,
                   hint: "Enter your first name",
                   hintColor: AppColor().greyColor.withOpacity(0.3),
                   validate: (value) {
@@ -141,7 +145,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                 ),
                 Gap(Get.height * 0.01),
                 CustomTextField(
-                   textEditingController: authController.lNameController,
+                  textEditingController: authController.lNameController,
                   hint: "Enter your last name",
                   hintColor: AppColor().greyColor.withOpacity(0.3),
                   validate: (value) {
@@ -160,12 +164,12 @@ class _SignUpEmailState extends State<SignUpEmail> {
                 ),
                 Gap(Get.height * 0.01),
                 CustomTextField(
-                   textEditingController: authController.lNameController,
+                  textEditingController: authController.userNameController,
                   hint: "Enter your user name",
                   hintColor: AppColor().greyColor.withOpacity(0.3),
                   validate: (value) {
                     if (value!.isEmpty) {
-                      return 'Last Name must not be empty';
+                      return 'User Name must not be empty';
                     }
                     return null;
                   },
@@ -240,12 +244,12 @@ class _SignUpEmailState extends State<SignUpEmail> {
                 ),
                 Gap(Get.height * 0.01),
                 CustomTextField(
-                  textEditingController: authController.lNameController,
+                  textEditingController: authController.addressController,
                   hint: "Enter your address",
                   hintColor: AppColor().greyColor.withOpacity(0.3),
                   validate: (value) {
                     if (value!.isEmpty) {
-                      return 'Last Name must not be empty';
+                      return 'Address must not be empty';
                     }
                     return null;
                   },
@@ -325,7 +329,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     if (value!.isEmpty) {
                       return 'password must not be empty';
                     } else if (value.length < 8) {
-                      return 'password must not be less than 8 character';
+                      return 'Confirm password must not be less than 8 character';
                     } else if (authController.passwordController.text !=
                         authController.confirmPasswordController.text) {
                       return 'confirm password does not match password';
@@ -345,67 +349,71 @@ class _SignUpEmailState extends State<SignUpEmail> {
                   ),
                 ),
                 Gap(Get.height * 0.015),
-                InkWell(
-                  onTap: () {
-                    User user = User(
-                      role: authController.accountTypeController.text,
-                      firstName: authController.fNameController.text.trim(),
-                      lastName: authController.lNameController.text.trim(),
-                      email: authController.emailController.text.trim(),
-                      password: authController.passwordController.text.trim(),
-                      confirmPassword:
-                          authController.confirmPasswordController.text.trim(),
-                      address:
-                          authController.confirmPasswordController.text.trim(),
-                      username:
-                          authController.confirmPasswordController.text.trim(),
-                      phone:
-                          authController.confirmPasswordController.text.trim(),
-                    );
+                Obx(() {
+                  return InkWell(
+                    onTap: () {
+                      User user = User(
+                        role: authController.accountType.value,
+                        firstName: authController.fNameController.text.trim(),
+                        lastName: authController.lNameController.text.trim(),
+                        email: authController.emailController.text.trim(),
+                        password: authController.passwordController.text.trim(),
+                        confirmPassword: authController
+                            .confirmPasswordController.text
+                            .trim(),
+                        address: authController.addressController.text.trim(),
+                        username: authController.userNameController.text.trim(),
+                        phone: number +
+                            authController.phoneNoController.text.trim(),
+                      );
 
-                    print('Users: ${user.toJson()}');
+                      print('Users: ${user.toJson()}');
 
-                    print('here');
-                    if (authController.signUpStatus != SignUpStatus.loading &&
-                        formKey.currentState!.validate()) {
-                      authController.signUp(user);
-                      //Get.to(const OtpScreen(userId: '',));
-                    }
-                  },
-                  child: Container(
-                    height: 50,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppColor().primaryColorPurple,
+                      print('here');
+                      if (authController.signUpStatus != SignUpStatus.loading &&
+                          formKey.currentState!.validate()) {
+                        authController.signUp(user);
+                        //Get.to(const OtpScreen(userId: '',));
+                      }
+                    },
+                    child: Container(
+                      height: 50,
+                      width: Get.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: AppColor().primaryColorPurple,
+                      ),
+                      child:
+                          (authController.signUpStatus == SignUpStatus.loading)
+                              ? LoadingWidget()
+                              : Center(
+                                  child: CustomText(
+                                  title: 'Continue',
+                                  color: AppColor().primaryWhite,
+                                  weight: FontWeight.w600,
+                                  size: 16,
+                                )),
                     ),
-                    child: Center(
-                        child: CustomText(
-                      title: 'Continue',
-                      color: AppColor().primaryWhite,
-                      weight: FontWeight.w600,
-                      size: 16,
-                    )),
-                  ),
 
-                  // CustomFillButton(
-                  //   onTap: () {
-                  //     if (_formKey.currentState!.validate()) {
-                  //       // If the form is valid, display a Snackbar.
+                    // CustomFillButton(
+                    //   onTap: () {
+                    //     if (_formKey.currentState!.validate()) {
+                    //       // If the form is valid, display a Snackbar.
 
-                  //     }
-                  //   },
-                  //   height: 46,
-                  //   width: MediaQuery.of(context).size.width,
-                  //   buttonText: 'Continue',
-                  //   textSize: 14,
-                  //   textColor: AppColor().primaryWhite,
-                  //   buttonColor: AppColor().primaryColorPurple,
-                  //   boarderColor: AppColor().primaryColorPurple,
-                  //   borderRadius: BorderRadius.circular(36),
-                  //   fontWeight: FontWeight.w600,
-                  // ),
-                ),
+                    //     }
+                    //   },
+                    //   height: 46,
+                    //   width: MediaQuery.of(context).size.width,
+                    //   buttonText: 'Continue',
+                    //   textSize: 14,
+                    //   textColor: AppColor().primaryWhite,
+                    //   buttonColor: AppColor().primaryColorPurple,
+                    //   boarderColor: AppColor().primaryColorPurple,
+                    //   borderRadius: BorderRadius.circular(36),
+                    //   fontWeight: FontWeight.w600,
+                    // ),
+                  );
+                }),
                 Gap(Get.height * 0.015),
                 Center(
                   child: Text.rich(
@@ -419,14 +427,17 @@ class _SignUpEmailState extends State<SignUpEmail> {
                           fontWeight: FontWeight.w500),
                       children: <TextSpan>[
                         TextSpan(
-                          text: "Login in",
-                          style: GoogleFonts.nunito(
-                            textStyle: TextStyle(
-                                color: AppColor().primaryColorGreen,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14),
-                          ),
-                        ),
+                            text: "Login in",
+                            style: GoogleFonts.nunito(
+                              textStyle: TextStyle(
+                                  color: AppColor().primaryColorGreen,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14),
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Get.to(() => const LoginPage());
+                              })
                       ],
                     ),
                     textAlign: TextAlign.center,

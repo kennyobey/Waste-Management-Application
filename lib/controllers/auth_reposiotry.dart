@@ -2,9 +2,13 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:halal_design/di/api_link.dart';
 import 'package:halal_design/di/shared_pref.dart';
 import 'package:halal_design/models/sign_in_model.dart';
+import 'package:halal_design/screens/ui/auth_screen/otp_screen.dart';
+import 'package:halal_design/screens/ui/dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 
@@ -73,10 +77,12 @@ class AuthRepository extends GetxController {
   late final accountTypeController = TextEditingController();
   late final fNameController = TextEditingController();
   late final lNameController = TextEditingController();
+  late final userNameController = TextEditingController();
   late final emailController = TextEditingController();
   late final phoneNoController = TextEditingController();
   late final passwordController = TextEditingController();
   late final confirmPasswordController = TextEditingController();
+  late final addressController = TextEditingController();
   late final otpPin = TextEditingController();
   late final userIdController = TextEditingController();
 
@@ -158,21 +164,31 @@ class AuthRepository extends GetxController {
             "Content-Type": "application/json",
           });
       var json = jsonDecode(response.body);
-      print(response.body);
+      print('res 1---- ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (json['status'] == 'success') {
+        print('here 1');
         Get.snackbar('Success',
             'Account created successfully, Proceed to validate your account!');
-        // Get.off(() => OtpScreen(
-        //       userId: json['data']['identifier'],
-        //     ));
-        if (kDebugMode) {
-          print(response.body);
-          print("user id ${json['data']['identifier']}");
-        }
+        Get.off(() => OtpScreen(
+            // userId: json['data']['identifier'],
+            ));
+        // if (kDebugMode) {
+        //   print('res2 ---- ${response.body}');
+        //   //print("user id ${json['data']['identifier']}");
+        // }
         print('here');
         return signInFromJson(response.body);
-      } else if (response.statusCode == 422) {
+      } else if (json['status'] == 'failed') {
+        // Fluttertoast.showToast(
+        //   msg: "${json['message']}",
+        //   toastLength: Toast.LENGTH_LONG,
+        //   gravity: ToastGravity.TOP,
+        //   timeInSecForIosWeb: 2,
+        //   backgroundColor: Colors.red,
+        //   textColor: Colors.white,
+        //   fontSize: 16.0,
+        // );
         Get.snackbar('error', 'The email has already been taken');
         _signUpStatus(SignUpStatus.error);
       } else {
@@ -195,72 +211,72 @@ class AuthRepository extends GetxController {
   //1ae8e93d-b5be-4b0a-a1c9-1ac0b70bfdba
   //6d9f1e46-49bc-420a-bb90-8aafce392911
 
-  // Future validateAccount({String? otp, userId}) async {
-  //   _otpValidateStatus(OtpValidateStatus.loading);
-  //   try {
-  //     if (kDebugMode) {
-  //       print('verifying otp...');
-  //       print('user Id: $userId, otp: $otp');
-  //     }
+  Future validateAccount({String? otp, userId}) async {
+    _otpValidateStatus(OtpValidateStatus.loading);
+    try {
+      if (kDebugMode) {
+        print('verifying otp...');
+        print('user Id: $userId, otp: $otp');
+      }
 
-  //     var response = await http.post(Uri.parse(ApiLink.validateOtp),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: jsonEncode({
-  //           "otp": otp,
-  //           "identifier": userId,
-  //         }));
-  //     if (kDebugMode) {
-  //       print('i am here');
-  //       print('body is${response.body}');
-  //     }
-  //     print('i am here 2');
-  //     var json = jsonDecode(response.body);
-  //     // if (json['success'] == false) {
-  //     //   throw (json['message']);
-  //     // }
+      var response = await http.post(Uri.parse(ApiLink.baseurl),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({
+            "otp": otp,
+            "identifier": userId,
+          }));
+      if (kDebugMode) {
+        print('i am here');
+        print('body is${response.body}');
+      }
+      print('i am here 2');
+      var json = jsonDecode(response.body);
+      // if (json['success'] == false) {
+      //   throw (json['message']);
+      // }
 
-  //     if (response.statusCode == 200) {
-  //       print('i am here 3');
-  //       Get.snackbar(
-  //           'Success', 'Otp validated successfully, Proceed to dashboard!');
-  //       Get.to(() => const SuccessPage(
-  //             title: 'validate',
-  //           ));
-  //       if (kDebugMode) {
-  //         print(' response is &{response.body}');
-  //         print("user id ${json['data']['identifier']}");
-  //       }
-  //       print('here');
-  //       return userFromJson(response.body);
-  //     } else if (response.statusCode == 409) {
-  //       _otpValidateStatus(OtpValidateStatus.success);
-  //       Get.snackbar('error', 'The email has already been taken');
-  //       _signUpStatus(SignUpStatus.error);
-  //     } else if (response.statusCode == 40) {
-  //       _otpValidateStatus(OtpValidateStatus.success);
-  //       Get.snackbar('error', 'OTP is not valid');
-  //       _signUpStatus(SignUpStatus.error);
-  //     } else {
-  //       return Future.error((json.decode(response.body)['message']) ??
-  //           'Failed to validate user');
-  //     }
+      if (response.statusCode == 200) {
+        print('i am here 3');
+        Get.snackbar(
+            'Success', 'Otp validated successfully, Proceed to dashboard!');
+        // Get.to(() => const SuccessPage(
+        //       title: 'validate',
+        //     ));
+        if (kDebugMode) {
+          print(' response is &{response.body}');
+          print("user id ${json['data']['identifier']}");
+        }
+        print('here');
+        // return userFromJson(response.body);
+      } else if (response.statusCode == 409) {
+        _otpValidateStatus(OtpValidateStatus.success);
+        Get.snackbar('error', 'The email has already been taken');
+        _signUpStatus(SignUpStatus.error);
+      } else if (response.statusCode == 40) {
+        _otpValidateStatus(OtpValidateStatus.success);
+        Get.snackbar('error', 'OTP is not valid');
+        _signUpStatus(SignUpStatus.error);
+      } else {
+        return Future.error((json.decode(response.body)['message']) ??
+            'Failed to validate user');
+      }
 
-  //     // return response.body;
-  //   } catch (error) {
-  //     _otpValidateStatus(OtpValidateStatus.error);
-  //     Get.snackbar(
-  //         'Error',
-  //         error.toString() ==
-  //                 "Failed host lookup: 'smart-waste-system.herokuapp.com''"
-  //             ? 'No internet connection!'
-  //             : error.toString());
-  //     if (kDebugMode) {
-  //       print("error ${error.toString()}");
-  //     }
-  //   }
-  // }
+      // return response.body;
+    } catch (error) {
+      _otpValidateStatus(OtpValidateStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com''"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print("error ${error.toString()}");
+      }
+    }
+  }
 
   // Future resendOTP({
   //   String? id,
@@ -444,116 +460,118 @@ class AuthRepository extends GetxController {
   //   }
   // }
 
-  // Future login() async {
-  //   _signInStatus(SignInStatus.loading);
-  //   try {
-  //     if (kDebugMode) {
-  //       print('login here...');
-  //     }
+  Future login() async {
+    _signInStatus(SignInStatus.loading);
+    try {
+      if (kDebugMode) {
+        print('login here...');
+      }
 
-  //     var response = await http.post(
-  //         Uri.parse(
-  //          // ApiLink.loginUser,
-  //         ),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: jsonEncode({
-  //           "username": emailController.text.trim(),
-  //           "password": passwordController.text.trim(),
-  //         }));
-  //     if (kDebugMode) {
-  //       print(response.body);
-  //     }
-  //     print(emailController.text.trim());
+      var response = await http.post(
+          Uri.parse(
+            ApiLink.loginUser,
+          ),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({
+            "login_param": emailController.text.trim(),
+            "password": passwordController.text.trim(),
+          }));
+      if (kDebugMode) {
+        print(response.body);
+      }
+      print(emailController.text.trim());
 
-  //     var json = jsonDecode(response.body);
-  //     // if (json['success'] == false) {
-  //     //   throw (json['message']);
-  //     // }
-  //     if (response.statusCode == 200) {
-  //       _signInStatus(SignInStatus.success);
-  //       mToken(json['token']);
-  //       pref!.saveToken(token);
-  //       print('The token is ${token}');
-  //       await getUser();
-  //      // Get.offAll(() => const Dashboard());
-  //       _signInStatus(SignInStatus.error);
-  //     } else if (response.statusCode == 403) {
-  //       _signInStatus(SignInStatus.error);
-  //       Get.snackbar('Alert', 'Please verify your account in order to proceed');
-  //       // Get.off(() => OtpScreen(
-  //       //       userId: json['data']['identifier'],
-  //       //     ));
-  //     }
-  //     return response.body;
-  //   } catch (error) {
-  //     _signInStatus(SignInStatus.error);
-  //     Get.snackbar(
-  //         'Error',
-  //         error.toString() ==
-  //                 "Failed host lookup: 'smart-waste-system.herokuapp.com''"
-  //             ? 'No internet connection!'
-  //             : error.toString());
-  //     if (kDebugMode) {
-  //       print("error side ${error.toString()}");
-  //     }
-  //   }
-  // }
+      var json = jsonDecode(response.body);
+      // if (json['success'] == false) {
+      //   throw (json['message']);
+      // }
+      if (json['status'] == 'success') {
+        _signInStatus(SignInStatus.success);
+        mToken(json['token']);
+        pref!.saveToken(token);
+        print('The token is $token');
+        await getUser();
+        Get.offAll(() => const Dashboard());
+        _signInStatus(SignInStatus.error);
+      } else if (json['status'] == 'failed') {
+        _signInStatus(SignInStatus.error);
+        Get.snackbar('Alert', 'Please verify your account in order to proceed');
+        // Get.off(() => OtpScreen(
+        //       userId: json['data']['identifier'],
+        //     ));
+      }
+      return response.body;
+    } catch (error) {
+      _signInStatus(SignInStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com''"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print("error side ${error.toString()}");
+      }
+    }
+  }
 
-  // Future getUser() async {
-  //   if (kDebugMode) {
-  //     print('getting user details...');
-  //   }
-  //   _authStatus(AuthStatus.loading);
-  //   try {
-  //     EasyLoading.show(status: 'loading...');
+  Future getUser() async {
+    if (kDebugMode) {
+      print('getting user details...');
+    }
+    _authStatus(AuthStatus.loading);
+    try {
+      // EasyLoading.show(status: 'loading...');
 
-  //     var response = await http.get(
-  //         Uri.parse(
-  //           ApiLink.getUser,
-  //         ),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           'Authorization': 'Bearer $token'
-  //         });
+      var response = await http.get(
+          Uri.parse(
+            ApiLink.getUser,
+          ),
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $token'
+          });
 
-  //     if (kDebugMode) {
-  //       print("user data is ${response.body}");
-  //     }
-  //     print('here 1');
-  //     if (response.statusCode == 200) {
-  //       print('here 3');
-  //       var json = jsonDecode(response.body);
-  //      // var userModel = User.fromJson(json['data']['userdetail']);
-  //       print('here 4');
-  //      // mUser(userModel);
-  //       if (kDebugMode) {
-  //      //   print('user details is $userModel');
-  //       }
-  //       print('here 2');
-  //      // Get.offAll(() => const Dashboard());
-  //      // pref!.setUser(userModel);
-  //       _authStatus(AuthStatus.authenticated);
-  //       EasyLoading.dismiss();
-  //     }
-  //   } catch (error) {
-  //     _signInStatus(SignInStatus.error);
-  //     Get.snackbar(
-  //         'Error',
-  //         error.toString() ==
-  //                 "Failed host lookup: 'smart-waste-system.herokuapp.com''"
-  //             ? 'No internet connection!'
-  //             : error.toString());
-  //     if (kDebugMode) {
-  //       print("error side ${error.toString()}");
-  //     }
-  //   }
-  // }
+      if (kDebugMode) {
+        print("user data is ${response.body}");
+      }
+      print('here 1');
+      var json = jsonDecode(response.body);
+      if (json['status'] == 'success') {
+        print('here 3');
+        var json = jsonDecode(response.body);
+        var userModel = User.fromJson(json['result']);
+        print('here 4');
+        mUser(userModel);
+        if (kDebugMode) {
+          print('user details is $userModel');
+        }
+        print('here 2');
+        Get.offAll(() => const Dashboard());
+        pref!.setUser(userModel);
+        _authStatus(AuthStatus.authenticated);
+        // EasyLoading.dismiss();
+      }
+    } catch (error) {
+      _signInStatus(SignInStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com''"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print("error side ${error.toString()}");
+      }
+    }
+  }
 
   void clear() {
     passwordController.clear();
     confirmPasswordController.clear();
+    fNameController.clear();
   }
 
   void logout() {
