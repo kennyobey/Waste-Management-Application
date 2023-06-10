@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+
 import 'package:halal_design/controllers/auth_reposiotry.dart';
+//import 'package:halal_design/controllers/login_repository.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/ui/auth_screen/forgot_password.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
@@ -17,8 +19,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    final authController = Get.put(AuthRepository());
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final authController = Get.put(AuthRepo());
+  //final authController = Get.put(LoginRepo());
+
   bool isHiddenPassword = true;
   bool? isChecked = false;
 
@@ -30,8 +34,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-   
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColor().primaryWhite,
@@ -173,15 +175,16 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(36),
                       color: AppColor().primaryColorPurple,
                     ),
-                    child: (authController.signInStatus == SignInStatus.loading)
-                        ? LoadingWidget()
-                        : Center(
-                            child: CustomText(
-                            title: 'Login',
-                            color: AppColor().primaryWhite,
-                            weight: FontWeight.w600,
-                            size: 16,
-                          )),
+                    child:
+                        (authController.signInStatus == SignInStatus.loading)
+                            ? LoadingWidget()
+                            : Center(
+                                child: CustomText(
+                                title: 'Login',
+                                color: AppColor().primaryWhite,
+                                weight: FontWeight.w600,
+                                size: 16,
+                              )),
                   ),
                 );
               }),

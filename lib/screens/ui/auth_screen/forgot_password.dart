@@ -29,7 +29,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    final authController = Get.put(AuthRepository());
+    final authController = Get.put(AuthRepo());
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

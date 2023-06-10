@@ -25,7 +25,7 @@ class SignUpEmail extends StatefulWidget {
 
 class _SignUpEmailState extends State<SignUpEmail> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final authController = Get.put(AuthRepository());
+  final authController = Get.put(AuthRepo());
   bool isHiddenPassword = true;
   bool? isChecked = false;
   late bool passRequirementMet;
@@ -48,11 +48,6 @@ class _SignUpEmailState extends State<SignUpEmail> {
       isHiddenPassword = !isHiddenPassword;
       super.initState();
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override

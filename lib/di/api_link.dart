@@ -14,4 +14,8 @@ class ApiLink {
 
   //Kyc
   static String nextofkin = "${baseurl}kyc/create-update-nextofkin";
+
+  //collector
+   static String createCollector = "${baseurl}collector/register";
+
 }

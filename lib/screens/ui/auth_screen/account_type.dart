@@ -20,7 +20,7 @@ class AccountType extends StatefulWidget {
 }
 
 class _AccountTypeState extends State<AccountType> {
-  final authController = Get.put(AuthRepository());
+  final authController = Get.put(AuthRepo());
   List accounTypes = ['Admin', 'User'];
   bool isclicked = true;
   int clicked = 2;

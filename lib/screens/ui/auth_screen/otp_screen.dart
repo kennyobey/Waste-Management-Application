@@ -20,7 +20,7 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final authController = Get.put(AuthRepository());
+  final authController = Get.put(AuthRepo());
   TextEditingController controller = TextEditingController(text: "");
   String thisText = "";
   String? otpText;
@@ -182,7 +182,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       );
                       if (widget.title == 'Account') {
                       } else {
-                        //authController.validateForgotResetPassword(
+                        // authController.validateForgotResetPassword(
                         //   otp: otpText);
                       }
                     }

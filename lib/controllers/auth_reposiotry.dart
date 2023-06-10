@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:halal_design/di/api_link.dart';
 import 'package:halal_design/di/shared_pref.dart';
 import 'package:halal_design/models/sign_in_model.dart';
 import 'package:halal_design/screens/ui/auth_screen/otp_screen.dart';
+import 'package:halal_design/screens/ui/auth_screen/sign_in.dart';
 import 'package:halal_design/screens/ui/dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
@@ -73,14 +72,14 @@ enum AuthStatus {
   validated,
 }
 
-class AuthRepository extends GetxController {
+class AuthRepo extends GetxController {
   late final accountTypeController = TextEditingController();
   late final fNameController = TextEditingController();
   late final lNameController = TextEditingController();
   late final userNameController = TextEditingController();
-  late final emailController = TextEditingController();
+  late final emailController = TextEditingController(text: 'MallamTYU');
   late final phoneNoController = TextEditingController();
-  late final passwordController = TextEditingController();
+  late final passwordController = TextEditingController(text: 'Postman1.');
   late final confirmPasswordController = TextEditingController();
   late final addressController = TextEditingController();
   late final otpPin = TextEditingController();
@@ -171,7 +170,7 @@ class AuthRepository extends GetxController {
         Get.snackbar('Success',
             'Account created successfully, Proceed to validate your account!');
         Get.off(() => OtpScreen(
-            // userId: json['data']['identifier'],
+              userId: json['data']['identifier'],
             ));
         // if (kDebugMode) {
         //   print('res2 ---- ${response.body}');
@@ -491,9 +490,12 @@ class AuthRepository extends GetxController {
         _signInStatus(SignInStatus.success);
         mToken(json['token']);
         pref!.saveToken(token);
-        print('The token is $token');
-        await getUser();
-        Get.offAll(() => const Dashboard());
+
+        if (kDebugMode) {
+          print('The token is $token');
+        }
+        getUser();
+        // Get.to(() => const Dashboard());
         _signInStatus(SignInStatus.error);
       } else if (json['status'] == 'failed') {
         _signInStatus(SignInStatus.error);
@@ -523,7 +525,7 @@ class AuthRepository extends GetxController {
     }
     _authStatus(AuthStatus.loading);
     try {
-      // EasyLoading.show(status: 'loading...');
+      //  EasyLoading.show(status: 'loading...');
 
       var response = await http.get(
           Uri.parse(
@@ -543,16 +545,17 @@ class AuthRepository extends GetxController {
         print('here 3');
         var json = jsonDecode(response.body);
         var userModel = User.fromJson(json['result']);
+        pref!.setUser(userModel);
         print('here 4');
         mUser(userModel);
         if (kDebugMode) {
-          print('user details is $userModel');
+          print('user details is ${userModel.toJson()}');
         }
         print('here 2');
-        Get.offAll(() => const Dashboard());
+        Get.to(() => const Dashboard());
         pref!.setUser(userModel);
         _authStatus(AuthStatus.authenticated);
-        // EasyLoading.dismiss();
+        //  EasyLoading.dismiss();
       }
     } catch (error) {
       _signInStatus(SignInStatus.error);
@@ -580,6 +583,6 @@ class AuthRepository extends GetxController {
     pref!.saveToken("0");
     mToken("0");
     pref!.logout();
-    //Get.offAll(() => const LoginPage());
+    Get.offAll(() => const LoginPage());
   }
 }
