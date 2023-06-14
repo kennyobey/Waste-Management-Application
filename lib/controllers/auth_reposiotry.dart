@@ -4,12 +4,25 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:halal_design/di/api_link.dart';
 import 'package:halal_design/di/shared_pref.dart';
+import 'package:halal_design/models/collector_list.dart';
+import 'package:halal_design/models/collector_model.dart';
 import 'package:halal_design/models/sign_in_model.dart';
+import 'package:halal_design/models/teams_list.dart';
 import 'package:halal_design/screens/ui/auth_screen/otp_screen.dart';
 import 'package:halal_design/screens/ui/auth_screen/sign_in.dart';
 import 'package:halal_design/screens/ui/dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+
+enum GetColletorStatus { empty, loading, error, success, available }
+enum GetTeamStatus { empty, loading, error, success, available }
+
+enum CreateColletorStatus {
+  empty,
+  loading,
+  error,
+  success,
+}
 
 enum SignUpStatus {
   empty,
@@ -84,14 +97,30 @@ class AuthRepo extends GetxController {
   late final addressController = TextEditingController();
   late final otpPin = TextEditingController();
   late final userIdController = TextEditingController();
+// collector controller.
+  late final collectorEmailController = TextEditingController();
+  late final collectorFirstNameController = TextEditingController();
+  late final collectorLastNameController = TextEditingController();
+  late final collectorPhoneNumController = TextEditingController();
+  late final collectorAdressController = TextEditingController();
+
+  final Rx<List<Result>> _getColletorList = Rx([]);
+  List<Result> get getColletorList => _getColletorList.value;
+
+ final Rx<List<TeamResult>> _getTeamsList = Rx([]);
+  List<TeamResult> get getTeamsList => _getTeamsList.value;
 
   final _authStatus = AuthStatus.empty.obs;
+  final status = AuthStatus.uninitialized.obs;
   final _signInStatus = SignInStatus.empty.obs;
   final _signUpStatus = SignUpStatus.empty.obs;
   final _otpAuthStatus = OtpAuthStatus.empty.obs;
   final _otpValidateStatus = OtpValidateStatus.empty.obs;
   final _updateProfileStatus = UpdateProfileStatus.empty.obs;
   final _otpForgotVerifyStatus = OtpForgotVerifyStatus.empty.obs;
+  final _createColletorStatus = CreateColletorStatus.empty.obs;
+  final _getColletorStatus = GetColletorStatus.empty.obs;
+   final _getTeamsStatus = GetTeamStatus.empty.obs;
 
   AuthStatus get authStatus => _authStatus.value;
   SignUpStatus get signUpStatus => _signUpStatus.value;
@@ -101,7 +130,9 @@ class AuthRepo extends GetxController {
   UpdateProfileStatus get updateProfileStatus => _updateProfileStatus.value;
   OtpForgotVerifyStatus get otpForgotVerifyStatus =>
       _otpForgotVerifyStatus.value;
-  final status = AuthStatus.uninitialized.obs;
+  CreateColletorStatus get createColletorStatus => _createColletorStatus.value;
+  GetColletorStatus get getColletorStatus => _getColletorStatus.value;
+   GetTeamStatus get getTeamsStatus => _getTeamsStatus.value;
 
   // User? user;
   final Rx<User?> mUser = Rx(null);
@@ -228,7 +259,7 @@ class AuthRepo extends GetxController {
           }));
       if (kDebugMode) {
         print('i am here');
-        print('body is${response.body}');
+        print('body is ${response.body}');
       }
       print('i am here 2');
       var json = jsonDecode(response.body);
@@ -478,6 +509,7 @@ class AuthRepo extends GetxController {
             "password": passwordController.text.trim(),
           }));
       if (kDebugMode) {
+        print('token is $token');
         print(response.body);
       }
       print(emailController.text.trim());
@@ -570,6 +602,171 @@ class AuthRepo extends GetxController {
       }
     }
   }
+
+  Future createCollector({required imageurl}) async {
+    try {
+      _createColletorStatus(CreateColletorStatus.loading);
+
+      if (kDebugMode) {
+        print('creating Collector...');
+        print('Collector json image: $imageurl');
+        print('Collector json fname: $collectorFirstNameController.text');
+        print('Collector json lname: $collectorLastNameController.text');
+        print('Collector json adress: $collectorAdressController.text');
+        print('Collector json phone: $collectorPhoneNumController.text');
+      }
+      var map = <String, dynamic>{};
+      map['first_name'] = collectorFirstNameController.text.trim();
+      map['last_name'] = collectorLastNameController.text.trim();
+      map['image'] = imageurl;
+      map['address'] = collectorAdressController.text.trim();
+      map['phone'] = collectorPhoneNumController.text.trim();
+      // var requestBody = {
+      //   'first_name': collectorFirstNameController.text.trim(),
+      //   'last_name': collectorLastNameController.text.trim(),
+      //   'image': imageurl,
+      //   'address': collectorAdressController.text.trim(),
+      //   'phone': collectorPhoneNumController.text.trim(),
+      // };
+      var response = await http.post(
+        Uri.parse(ApiLink.createCollector),
+        body: map,
+        //jsonEncode(createCollector.toJson()),
+        headers: {
+          "Content-Type": "application/form-data",
+          "Authorization": "Bearer $token"
+        },
+      );
+      print('Collector map is: $map');
+      var json = jsonDecode(response.body);
+      if (kDebugMode) {
+        print('token is $token');
+      }
+      print('collector response is ${response.body}');
+
+      if (json['status'] == 'success') {
+        _createColletorStatus(CreateColletorStatus.success);
+
+        Get.snackbar('Success', 'Collector created successfully!');
+        clear();
+      }
+      print('here');
+      return collectoModelFromJson(response.body);
+    } catch (error) {
+      _createColletorStatus(CreateColletorStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('Collector creation Error ${error.toString()}');
+      }
+    }
+  }
+
+  Future getCollector() async {
+    try {
+      _getColletorStatus(GetColletorStatus.loading);
+      if (kDebugMode) {
+        print('getting my collector...');
+      }
+      var response = await http.get(
+        Uri.parse(ApiLink.getAllCollector),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+      print('here 1');
+      var json = jsonDecode(response.body);
+      if (kDebugMode) {
+        print(response.body);
+      }
+      print('here 2');
+      if (json['status'] == 'success') {
+        var list = List.from(json['result']);
+        var collectors = list.map((e) => Result.fromJson(e)).toList();
+        if (kDebugMode) {
+          print("Collector list lenght ${collectors.length} request");
+          print("Req  ${collectors.first} request");
+        }
+        _getColletorList(collectors);
+        collectors.isNotEmpty
+            ? _getColletorStatus(GetColletorStatus.available)
+            : _getColletorStatus(GetColletorStatus.empty);
+        _getColletorStatus(GetColletorStatus.success);
+      }
+      return response.body;
+    } catch (error) {
+      _getColletorStatus(GetColletorStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('my request Error ${error.toString()}');
+      }
+    }
+  }
+
+  Future getTeams() async {
+    try {
+      _getTeamsStatus(GetTeamStatus.loading);
+      if (kDebugMode) {
+        print('getting my teams...');
+      }
+      var response = await http.get(
+        Uri.parse(ApiLink.getAllTeams),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+      print('here 1');
+      var json = jsonDecode(response.body);
+      if (kDebugMode) {
+        print(response.body);
+      }
+      print('here 2');
+      if (json['status'] == 'success') {
+        var list = List.from(json['result']);
+        var teams = list.map((e) => TeamResult.fromJson(e)).toList();
+        if (kDebugMode) {
+          print("Team list lenght ${teams.length} request");
+          print("Req  ${teams.first} request");
+        }
+        _getTeamsList(teams);
+        teams.isNotEmpty
+            ? _getTeamsStatus(GetTeamStatus.available)
+            : _getTeamsStatus(GetTeamStatus.empty);
+        _getTeamsStatus(GetTeamStatus.success);
+      }
+      return response.body;
+    } catch (error) {
+      _getTeamsStatus(GetTeamStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('my request Error ${error.toString()}');
+      }
+    }
+  }
+
+  // void clear() {
+  //   collectorEmailController.clear();
+  //   collectorFirstNameController.clear();
+  //   collectorLastNameController.clear();
+  //   collectorPhoneNumController.clear();
+  //   collectorAdressController.clear();
+  // }
 
   void clear() {
     passwordController.clear();

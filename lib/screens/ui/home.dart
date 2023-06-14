@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   final authController = Get.put(AuthRepo());
   @override
   Widget build(BuildContext context) {
-    //  print('home page ${authController.getUser()}');
+    print('home page ${authController.getUser()}');
     return Scaffold(
       backgroundColor: AppColor().backGround,
       body: SingleChildScrollView(
@@ -263,89 +263,115 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const Gap(15),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    height: 84,
-                    decoration: BoxDecoration(
-                      color: AppColor().primaryWhite,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/images/svgs/top_up_icon.svg",
-                          // height: 30,
-                        ),
-                        const Gap(15),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomText(
-                              title: 'Top Up',
-                              color: AppColor().lightPurple,
-                              size: 16,
-                              weight: FontWeight.w600,
+                  InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
                             ),
-                            const Gap(3),
-                            CustomText(
-                              title: 'Fund your account with ease',
-                              color: AppColor().primaryDark,
-                              size: 10,
-                              weight: FontWeight.w400,
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        SvgPicture.asset(
-                          "assets/images/svgs/forward_arrow.svg",
-                          // height: 30,
-                        ),
-                      ],
+                          ),
+                          context: context,
+                          builder: (context) => CreateTeam());
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      height: 84,
+                      decoration: BoxDecoration(
+                        color: AppColor().primaryWhite,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/images/svgs/top_up_icon.svg",
+                            // height: 30,
+                          ),
+                          const Gap(15),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomText(
+                                title: 'Create Team',
+                                color: AppColor().lightPurple,
+                                size: 16,
+                                weight: FontWeight.w600,
+                              ),
+                              const Gap(3),
+                              CustomText(
+                                title: 'Fund your account with ease',
+                                color: AppColor().primaryDark,
+                                size: 10,
+                                weight: FontWeight.w400,
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          SvgPicture.asset(
+                            "assets/images/svgs/forward_arrow.svg",
+                            // height: 30,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const Gap(15),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    height: 84,
-                    decoration: BoxDecoration(
-                      color: AppColor().primaryWhite,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/images/svgs/xchange_icon.svg",
-                          // height: 30,
-                        ),
-                        const Gap(15),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomText(
-                              title: 'Xchange',
-                              color: AppColor().primaryWine,
-                              size: 16,
-                              weight: FontWeight.w600,
+                  InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
                             ),
-                            const Gap(3),
-                            CustomText(
-                              title: 'Get the best currency exchange rate',
-                              color: AppColor().primaryDark,
-                              size: 10,
-                              weight: FontWeight.w400,
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        SvgPicture.asset(
-                          "assets/images/svgs/forward_arrow.svg",
-                          // height: 30,
-                        ),
-                      ],
+                          ),
+                          context: context,
+                          builder: (context) => CreateContainer());
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      height: 84,
+                      decoration: BoxDecoration(
+                        color: AppColor().primaryWhite,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/images/svgs/xchange_icon.svg",
+                            // height: 30,
+                          ),
+                          const Gap(15),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomText(
+                                title: 'Create Container',
+                                color: AppColor().primaryWine,
+                                size: 16,
+                                weight: FontWeight.w600,
+                              ),
+                              const Gap(3),
+                              CustomText(
+                                title: 'Get the best currency exchange rate',
+                                color: AppColor().primaryDark,
+                                size: 10,
+                                weight: FontWeight.w400,
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          SvgPicture.asset(
+                            "assets/images/svgs/forward_arrow.svg",
+                            // height: 30,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

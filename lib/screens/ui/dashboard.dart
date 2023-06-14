@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:halal_design/screens/ui/account.dart';
-import 'package:halal_design/screens/ui/bayarx.dart';
+import 'package:halal_design/screens/ui/teams.dart';
+import 'package:halal_design/screens/ui/container.dart';
+import 'package:halal_design/screens/ui/collectors.dart';
 import 'package:halal_design/screens/ui/home.dart';
 import '../constants/color.dart';
 import '../widget/custom_text.dart';
@@ -61,21 +62,21 @@ class _DashboardState extends State<Dashboard> {
                       buildButton(
                           onPress: () {
                             setState(() {
-                              currentScreen = const Card();
+                              currentScreen = const Cardpage();
                               selectedIndex = 1;
                             });
                           },
                           image: 'assets/images/svgs/cards.svg',
-                          title: 'Cards'),
+                          title: 'Collector'),
                       buildButton(
                           onPress: () {
                             setState(() {
-                              currentScreen = const Account();
+                              currentScreen = const TeamPage();
                               selectedIndex = 2;
                             });
                           },
                           image: 'assets/images/svgs/bank.svg',
-                          title: 'Accounts'),
+                          title: 'Teams'),
                       buildButton(
                           onPress: () {
                             setState(() {
@@ -84,7 +85,7 @@ class _DashboardState extends State<Dashboard> {
                             });
                           },
                           image: 'assets/images/svgs/stickynote.svg',
-                          title: 'BayarX'),
+                          title: 'Container'),
                     ],
                   ),
                 ),
@@ -145,7 +146,7 @@ class _DashState extends State<Dash> {
   final _widgetOptions = [
     const HomePage(),
     const Card(),
-    const Account(),
+    const TeamPage(),
     const BayarX()
   ];
 

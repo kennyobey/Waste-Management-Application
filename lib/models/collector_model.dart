@@ -36,52 +36,42 @@ class CollectoModel {
 class ColletorData {
   String? firstName;
   String? lastName;
-  String? profileImageUrl;
-  String? profileImageSecureUrl;
-  String? imagePublicId;
+  String? image;
   String? address;
   String? phone;
   String? id;
   DateTime? createdAt;
   DateTime? updatedAt;
-  int? v;
 
   ColletorData({
     this.firstName,
     this.lastName,
-    this.profileImageUrl,
-    this.profileImageSecureUrl,
-    this.imagePublicId,
+    this.image,
     this.address,
     this.phone,
     this.id,
     this.createdAt,
     this.updatedAt,
-    this.v,
   });
 
   factory ColletorData.fromJson(Map<String, dynamic> json) => ColletorData(
         firstName: json["first_name"],
         lastName: json["last_name"],
-        profileImageUrl: json["profile_image_url"],
-        profileImageSecureUrl: json["profile_image_secure_url"],
-        imagePublicId: json["image_public_id"],
+        image: json["image"],
         address: json["address"],
         phone: json["phone"],
         id: json["_id"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
-        v: json["__v"],
       );
 
   Map<String, dynamic> toJson() => {
         "first_name": firstName,
         "last_name": lastName,
-        "profile_image_url": profileImageUrl,
-        "profile_image_secure_url": profileImageSecureUrl,
-        "image_public_id": imagePublicId,
+        "image": image,
         "address": address,
         "phone": phone,
         "_id": id,
       };
 }
+
