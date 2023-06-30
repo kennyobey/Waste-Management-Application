@@ -19,4 +19,11 @@ class ApiLink {
   static String createCollector = "${baseurl}collector/register";
   static String getAllCollector = "${baseurl}collector/get-all";
   static String getAllTeams = "${baseurl}team/get-all";
+  static String getContainer = "${baseurl}container/get-all";
+  static String createContainer = "${baseurl}container/register";
+  static String updateContainer = "${baseurl}container/update";
+  static String deleteContainer = "${baseurl}container/delete";
+  static String createTeams = "${baseurl}team/create";
+   
 }
+

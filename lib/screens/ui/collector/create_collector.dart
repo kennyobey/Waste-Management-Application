@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:halal_design/controllers/auth_reposiotry.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/function/function.dart';
+import 'package:halal_design/screens/ui/dashboard.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
 import 'package:halal_design/screens/widget/loading.dart';
 import 'package:halal_design/screens/widget/text_field_widget.dart';
@@ -322,7 +323,7 @@ class _CreateCollectorState extends State<CreateCollector> {
 
 class CreateTeam extends StatelessWidget {
   CreateTeam({super.key});
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> teamformKey = GlobalKey<FormState>();
   final authController = Get.put(AuthRepo());
   @override
   Widget build(BuildContext context) {
@@ -333,258 +334,257 @@ class CreateTeam extends StatelessWidget {
               horizontal: Get.height * 0.025,
               vertical: Get.height * 0.03,
             ),
-            child: Form(
-                key: formKey,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CustomText(
-                            title: 'Create Team',
-                            color: AppColor().primaryDark,
-                            size: 16,
-                            weight: FontWeight.w700,
-                          ),
-                          Container(),
-                        ],
-                      ),
-                      Gap(Get.height * 0.01),
                       CustomText(
-                        title: 'Team Name',
-                        color: AppColor().greyColor,
-                        size: 14,
-                        weight: FontWeight.w500,
+                        title: 'Create Team',
+                        color: AppColor().primaryDark,
+                        size: 16,
+                        weight: FontWeight.w700,
                       ),
-                      Gap(Get.height * 0.01),
-                      CustomTextField(
-                        // textEditingController:
-                        //     authController.collectorFirstNameController,
-                        hint: "Enter your first CreateTeam",
-                        hintColor: AppColor().greyColor.withOpacity(0.3),
-                        validate: (value) {
-                          if (value!.isEmpty) {
-                            return 'First Name must not be empty';
-                          }
-                          return null;
-                        },
+                      Container(),
+                    ],
+                  ),
+                  Gap(Get.height * 0.01),
+                  CustomText(
+                    title: 'Team Name',
+                    color: AppColor().greyColor,
+                    size: 14,
+                    weight: FontWeight.w500,
+                  ),
+                  Gap(Get.height * 0.01),
+                  CustomTextField(
+                    textEditingController: authController.teamNameController,
+                    hint: "Enter Team Name",
+                    hintColor: AppColor().greyColor.withOpacity(0.3),
+                    validate: (value) {
+                      if (value!.isEmpty) {
+                        return 'Team Name must not be empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  Gap(Get.height * 0.015),
+                  CustomText(
+                    title: 'Team Area',
+                    color: AppColor().greyColor,
+                    size: 14,
+                    weight: FontWeight.w500,
+                  ),
+                  Gap(Get.height * 0.01),
+                  CustomTextField(
+                    textEditingController: authController.teamAreaController,
+                    hint: "Enter Team Area",
+                    hintColor: AppColor().greyColor.withOpacity(0.3),
+                    validate: (value) {
+                      if (value!.isEmpty) {
+                        return 'Team Area must not be empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  Gap(Get.height * 0.02),
+                  Obx(() {
+                    return InkWell(
+                      onTap: () {
+                        print('here on sending page');
+                        if (authController.createTeamsStatus !=
+                            CreateTeamStatus.loading) {
+                          authController.createTeam();
+                        }
+                      },
+                      child: Container(
+                        height: 50,
+                        width: Get.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColor().primaryColorPurple,
+                        ),
+                        child: (authController.createTeamsStatus ==
+                                CreateTeamStatus.loading)
+                            ? LoadingWidget()
+                            : Center(
+                                child: CustomText(
+                                title: 'Create Team',
+                                color: AppColor().primaryWhite,
+                                weight: FontWeight.w600,
+                                size: 16,
+                              )),
                       ),
-                      Gap(Get.height * 0.015),
-                      CustomText(
-                        title: 'Team Area',
-                        color: AppColor().greyColor,
-                        size: 14,
-                        weight: FontWeight.w500,
-                      ),
-                      Gap(Get.height * 0.01),
-                      CustomTextField(
-                        // textEditingController:
-                        //     authController.collectorLastNameController,
-                        hint: "Enter your last CreateTeam",
-                        hintColor: AppColor().greyColor.withOpacity(0.3),
-                        validate: (value) {
-                          if (value!.isEmpty) {
-                            return 'Last Name must not be empty';
-                          }
-                          return null;
-                        },
-                      ),
-                      Gap(Get.height * 0.02),
-                      Obx(() {
-                        return InkWell(
-                          onTap: () {
-                            // ColletorData createCollector = ColletorData(
-                            //   firstName: collectorController
-                            //       .collectorFirstNameController.text
-                            //       .trim(),
-                            //   lastName: collectorController
-                            //       .collectorLastNameController.text
-                            //       .trim(),
-                            //   address: collectorController
-                            //       .collectorAdressController.text
-                            //       .trim(),
-                            //   phone: number +
-                            //       collectorController
-                            //           .collectorPhoneNumController.text
-                            //           .trim(),
-                            //   image: image!.path.toString(),
-                            // );
-
-                            // print('Users: ${createCollector.toJson()}');
-
-                            print('here on sending page');
-                            if (authController.createColletorStatus !=
-                                    CreateColletorStatus.loading &&
-                                formKey.currentState!.validate()) {
-                              //Get.to(const OtpScreen(userId: '',));
-                            }
-                          },
-                          child: Container(
-                            height: 50,
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: AppColor().primaryColorPurple,
-                            ),
-                            child: (authController.createColletorStatus ==
-                                    CreateColletorStatus.loading)
-                                ? LoadingWidget()
-                                : Center(
-                                    child: CustomText(
-                                    title: 'Submit',
-                                    color: AppColor().primaryWhite,
-                                    weight: FontWeight.w600,
-                                    size: 16,
-                                  )),
-                          ),
-                        );
-                      }),
-                    ]))));
+                    );
+                  }),
+                ])));
   }
 }
 
 class CreateContainer extends StatelessWidget {
-  CreateContainer({super.key});
+  final String? create;
+  final String? id;
+  CreateContainer({super.key, this.create, this.id});
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final authController = Get.put(AuthRepo());
+  // var item = authController.getContainerList[index];
   @override
   Widget build(BuildContext context) {
+    print("ID is ${id}");
     return SizedBox(
-        height: 420,
+        height: create == "false" ? 340 : 420,
         child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: Get.height * 0.025,
               vertical: Get.height * 0.03,
             ),
-            child: Form(
-                key: formKey,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CustomText(
-                            title: 'Create Container',
-                            color: AppColor().primaryDark,
-                            size: 16,
-                            weight: FontWeight.w700,
-                          ),
-                        ],
-                      ),
-                      Gap(Get.height * 0.01),
                       CustomText(
-                        title: 'Container Name',
-                        color: AppColor().greyColor,
-                        size: 14,
-                        weight: FontWeight.w500,
+                        title: create == "false"
+                            ? "Update Container"
+                            : 'Create Container',
+                        color: AppColor().primaryDark,
+                        size: 16,
+                        weight: FontWeight.w700,
                       ),
-                      Gap(Get.height * 0.01),
-                      CustomTextField(
-                        // textEditingController:
-                        //     authController.collectorFirstNameController,
-                        hint: "Enter your first CreateTeam",
-                        hintColor: AppColor().greyColor.withOpacity(0.3),
-                        validate: (value) {
-                          if (value!.isEmpty) {
-                            return 'First Name must not be empty';
-                          }
-                          return null;
-                        },
-                      ),
-                      Gap(Get.height * 0.015),
-                      CustomText(
-                        title: 'Container Area',
-                        color: AppColor().greyColor,
-                        size: 14,
-                        weight: FontWeight.w500,
-                      ),
-                      Gap(Get.height * 0.01),
-                      CustomTextField(
-                        // textEditingController:
-                        //     authController.collectorLastNameController,
-                        hint: "Enter your last CreateTeam",
-                        hintColor: AppColor().greyColor.withOpacity(0.3),
-                        validate: (value) {
-                          if (value!.isEmpty) {
-                            return 'Last Name must not be empty';
-                          }
-                          return null;
-                        },
-                      ),
-                      Gap(Get.height * 0.015),
-                      CustomText(
-                        title: 'Team',
-                        color: AppColor().greyColor,
-                        size: 14,
-                        weight: FontWeight.w500,
-                      ),
-                      Gap(Get.height * 0.01),
-                      CustomTextField(
-                        // textEditingController:
-                        //     authController.collectorLastNameController,
-                        hint: "Enter your last CreateTeam",
-                        hintColor: AppColor().greyColor.withOpacity(0.3),
-                        validate: (value) {
-                          if (value!.isEmpty) {
-                            return 'Last Name must not be empty';
-                          }
-                          return null;
-                        },
-                      ),
-                      Gap(Get.height * 0.02),
-                      Obx(() {
-                        return InkWell(
-                          onTap: () {
-                            // ColletorData createCollector = ColletorData(
-                            //   firstName: collectorController
-                            //       .collectorFirstNameController.text
-                            //       .trim(),
-                            //   lastName: collectorController
-                            //       .collectorLastNameController.text
-                            //       .trim(),
-                            //   address: collectorController
-                            //       .collectorAdressController.text
-                            //       .trim(),
-                            //   phone: number +
-                            //       collectorController
-                            //           .collectorPhoneNumController.text
-                            //           .trim(),
-                            //   image: image!.path.toString(),
-                            // );
-
-                            // print('Users: ${createCollector.toJson()}');
-
-                            print('here on sending page');
-                            if (authController.createColletorStatus !=
-                                    CreateColletorStatus.loading &&
-                                formKey.currentState!.validate()) {
-                              //Get.to(const OtpScreen(userId: '',));
+                    ],
+                  ),
+                  create == "false" ? Container() : Gap(Get.height * 0.01),
+                  create == "false"
+                      ? Container()
+                      : CustomText(
+                          title: 'Container Location',
+                          color: AppColor().greyColor,
+                          size: 14,
+                          weight: FontWeight.w500,
+                        ),
+                  Gap(Get.height * 0.01),
+                  create == "false"
+                      ? Container()
+                      : CustomTextField(
+                          textEditingController:
+                              authController.containerLocationController,
+                          hint: "Container Location",
+                          hintColor: AppColor().greyColor.withOpacity(0.3),
+                          validate: (value) {
+                            if (value!.isEmpty) {
+                              return 'Container Location must not be empty';
                             }
+                            return null;
                           },
-                          child: Container(
-                            height: 50,
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: AppColor().primaryColorPurple,
+                        ),
+                  Gap(Get.height * 0.015),
+                  CustomText(
+                    title: 'Container Volume',
+                    color: AppColor().greyColor,
+                    size: 14,
+                    weight: FontWeight.w500,
+                  ),
+                  Gap(Get.height * 0.01),
+                  CustomTextField(
+                    keyType: TextInputType.number,
+                    textEditingController:
+                        authController.containerVolumeController,
+                    hint: "Conatainer Volume",
+                    hintColor: AppColor().greyColor.withOpacity(0.3),
+                    validate: (value) {
+                      if (value!.isEmpty) {
+                        return 'Conatainer Volume must not be empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  Gap(Get.height * 0.015),
+                  CustomText(
+                    title: 'Team Name',
+                    color: AppColor().greyColor,
+                    size: 14,
+                    weight: FontWeight.w500,
+                  ),
+                  Gap(Get.height * 0.01),
+                  CustomTextField(
+                    textEditingController:
+                        authController.containerTeamController,
+                    hint: "Create Team",
+                    hintColor: AppColor().greyColor.withOpacity(0.3),
+                    validate: (value) {
+                      if (value!.isEmpty) {
+                        return 'Last Name must not be empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  Gap(Get.height * 0.02),
+                  create != "false"
+                      ? Obx(() {
+                          return InkWell(
+                            onTap: () {
+                              // print('Users: ${createCollector.toJson()}');
+                              print('here on sending page');
+                              if (authController.createContainerStatus !=
+                                  CreateContainerStatus.loading) {
+                                authController.createContainer();
+                              }
+                            },
+                            child: Container(
+                              height: 50,
+                              width: Get.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColor().primaryColorPurple,
+                              ),
+                              child: (authController.createContainerStatus ==
+                                      CreateContainerStatus.loading)
+                                  ? LoadingWidget()
+                                  : Center(
+                                      child: CustomText(
+                                      title: 'Create Container',
+                                      color: AppColor().primaryWhite,
+                                      weight: FontWeight.w600,
+                                      size: 16,
+                                    )),
                             ),
-                            child: (authController.createColletorStatus ==
-                                    CreateColletorStatus.loading)
-                                ? LoadingWidget()
-                                : Center(
-                                    child: CustomText(
-                                    title: 'Submit',
-                                    color: AppColor().primaryWhite,
-                                    weight: FontWeight.w600,
-                                    size: 16,
-                                  )),
-                          ),
-                        );
-                      }),
-                    ]))));
+                          );
+                        })
+                      : Obx(() {
+                          return InkWell(
+                            onTap: () {
+                              // print('Users: ${createCollector.toJson()}');
+                              print('here on sending page');
+                              if (authController.updateContainerStatus !=
+                                  UpdateContainerStatus.loading) {
+                                authController.upadateContainer(
+                                    containerId: id);
+                                Get.back();
+                              }
+                            },
+                            child: Container(
+                              height: 50,
+                              width: Get.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColor().primaryColorPurple,
+                              ),
+                              child: (authController.updateContainerStatus ==
+                                      UpdateContainerStatus.loading)
+                                  ? LoadingWidget()
+                                  : Center(
+                                      child: CustomText(
+                                      title: "Update Container",
+                                      color: AppColor().primaryWhite,
+                                      weight: FontWeight.w600,
+                                      size: 16,
+                                    )),
+                            ),
+                          );
+                        }),
+                ])));
   }
 }

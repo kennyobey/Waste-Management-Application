@@ -32,7 +32,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   intl_phone_field: ^3.1.0
   auto_size_text: ^3.0.0
-  cached_network_image: ^3.2.3
+  #cached_network_image: ^3.2.3
   cupertino_icons: ^1.0.2
   dotted_border: ^2.0.0+3
   dotted_decoration: ^2.0.0
@@ -41,6 +41,7 @@ dependencies:
   pin_code_text_field: ^1.8.0
   flutter_launcher_icons: ^0.13.1
   image_picker: ^0.8.8
+  http: ^1.1.0
 
 
  

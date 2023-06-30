@@ -10,8 +10,8 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 30,
-      height: 30,
+      width: 50,
+      height: 50,
       child: Center(
           child: Platform.isIOS
               ? CupertinoActivityIndicator(

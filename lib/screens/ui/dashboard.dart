@@ -80,7 +80,7 @@ class _DashboardState extends State<Dashboard> {
                       buildButton(
                           onPress: () {
                             setState(() {
-                              currentScreen = const BayarX();
+                              currentScreen = const ContainerPage();
                               selectedIndex = 3;
                             });
                           },
@@ -147,7 +147,7 @@ class _DashState extends State<Dash> {
     const HomePage(),
     const Card(),
     const TeamPage(),
-    const BayarX()
+    const ContainerPage()
   ];
 
   void _onItemTapped(int index) {
