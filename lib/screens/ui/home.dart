@@ -6,6 +6,8 @@ import 'package:halal_design/controllers/auth_reposiotry.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/ui/collector/create_collector.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void getLocation() async {
+    await Geolocator.checkPermission();
+    await Geolocator.requestPermission();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    print(position);
+  }
+
+  void getAddress() async {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(7.552956, 4.458804);
+    print(placemarks);
+  }
+
   final authController = Get.put(AuthRepo());
   @override
   Widget build(BuildContext context) {
@@ -372,6 +388,28 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
+                    ),
+                  ),
+                  const Gap(15),
+                  InkWell(
+                    onTap: () {
+                      getLocation();
+                      getAddress();
+                    },
+                    child: Container(
+                      height: 50,
+                      width: Get.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: AppColor().primaryColorPurple,
+                      ),
+                      child: Center(
+                          child: CustomText(
+                        title: 'Get Loctaion',
+                        color: AppColor().primaryWhite,
+                        weight: FontWeight.w600,
+                        size: 16,
+                      )),
                     ),
                   ),
                 ],

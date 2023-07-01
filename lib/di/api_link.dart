@@ -24,6 +24,6 @@ class ApiLink {
   static String updateContainer = "${baseurl}container/update";
   static String deleteContainer = "${baseurl}container/delete";
   static String createTeams = "${baseurl}team/create";
-   
+  static String deleteTeam = "${baseurl}team/delete";
+  static String updateTeam = "${baseurl}team/update";
 }
-

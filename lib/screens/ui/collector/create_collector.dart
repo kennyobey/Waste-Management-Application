@@ -322,13 +322,15 @@ class _CreateCollectorState extends State<CreateCollector> {
 }
 
 class CreateTeam extends StatelessWidget {
-  CreateTeam({super.key});
+  final String? teamCreate;
+  final String? teamId;
+  CreateTeam({super.key, this.teamCreate, this.teamId});
   final GlobalKey<FormState> teamformKey = GlobalKey<FormState>();
   final authController = Get.put(AuthRepo());
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 320,
+        height: teamCreate == 'false' ? 250 : 320,
         child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: Get.height * 0.025,
@@ -342,7 +344,9 @@ class CreateTeam extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomText(
-                        title: 'Create Team',
+                        title: teamCreate == 'false'
+                            ? "Update Team"
+                            : "Create Team",
                         color: AppColor().primaryDark,
                         size: 16,
                         weight: FontWeight.w700,
@@ -370,54 +374,89 @@ class CreateTeam extends StatelessWidget {
                     },
                   ),
                   Gap(Get.height * 0.015),
-                  CustomText(
-                    title: 'Team Area',
-                    color: AppColor().greyColor,
-                    size: 14,
-                    weight: FontWeight.w500,
-                  ),
-                  Gap(Get.height * 0.01),
-                  CustomTextField(
-                    textEditingController: authController.teamAreaController,
-                    hint: "Enter Team Area",
-                    hintColor: AppColor().greyColor.withOpacity(0.3),
-                    validate: (value) {
-                      if (value!.isEmpty) {
-                        return 'Team Area must not be empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  Gap(Get.height * 0.02),
-                  Obx(() {
-                    return InkWell(
-                      onTap: () {
-                        print('here on sending page');
-                        if (authController.createTeamsStatus !=
-                            CreateTeamStatus.loading) {
-                          authController.createTeam();
-                        }
-                      },
-                      child: Container(
-                        height: 50,
-                        width: Get.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: AppColor().primaryColorPurple,
+                  teamCreate == 'false'
+                      ? Container()
+                      : CustomText(
+                          title: 'Team Area',
+                          color: AppColor().greyColor,
+                          size: 14,
+                          weight: FontWeight.w500,
                         ),
-                        child: (authController.createTeamsStatus ==
-                                CreateTeamStatus.loading)
-                            ? LoadingWidget()
-                            : Center(
-                                child: CustomText(
-                                title: 'Create Team',
-                                color: AppColor().primaryWhite,
-                                weight: FontWeight.w600,
-                                size: 16,
-                              )),
-                      ),
-                    );
-                  }),
+                  teamCreate == 'false' ? Container() : Gap(Get.height * 0.01),
+                  teamCreate == 'false'
+                      ? Container()
+                      : CustomTextField(
+                          textEditingController:
+                              authController.teamAreaController,
+                          hint: "Enter Team Area",
+                          hintColor: AppColor().greyColor.withOpacity(0.3),
+                          validate: (value) {
+                            if (value!.isEmpty) {
+                              return 'Team Area must not be empty';
+                            }
+                            return null;
+                          },
+                        ),
+                  Gap(Get.height * 0.02),
+                  teamCreate == 'false'
+                      ? Obx(() {
+                          return InkWell(
+                            onTap: () {
+                              print('here on sending page');
+                              if (authController.updateTeamStatus !=
+                                  UpdateTeamStatus.loading) {
+                                authController.upadateTeam(teamId: teamId);
+                              }
+                            },
+                            child: Container(
+                              height: 50,
+                              width: Get.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColor().primaryColorPurple,
+                              ),
+                              child: (authController.updateTeamStatus ==
+                                      UpdateTeamStatus.loading)
+                                  ? LoadingWidget()
+                                  : Center(
+                                      child: CustomText(
+                                      title: 'Update Team',
+                                      color: AppColor().primaryWhite,
+                                      weight: FontWeight.w600,
+                                      size: 16,
+                                    )),
+                            ),
+                          );
+                        })
+                      : Obx(() {
+                          return InkWell(
+                            onTap: () {
+                              print('here on sending page');
+                              if (authController.createTeamsStatus !=
+                                  CreateTeamStatus.loading) {
+                                authController.createTeam();
+                              }
+                            },
+                            child: Container(
+                              height: 50,
+                              width: Get.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColor().primaryColorPurple,
+                              ),
+                              child: (authController.createTeamsStatus ==
+                                      CreateTeamStatus.loading)
+                                  ? LoadingWidget()
+                                  : Center(
+                                      child: CustomText(
+                                      title: 'Create Team',
+                                      color: AppColor().primaryWhite,
+                                      weight: FontWeight.w600,
+                                      size: 16,
+                                    )),
+                            ),
+                          );
+                        }),
                 ])));
   }
 }
@@ -531,6 +570,7 @@ class CreateContainer extends StatelessWidget {
                               if (authController.createContainerStatus !=
                                   CreateContainerStatus.loading) {
                                 authController.createContainer();
+                                Get.back();
                               }
                             },
                             child: Container(

@@ -42,7 +42,21 @@ enum UpdateContainerStatus {
   success,
 }
 
+enum UpdateTeamStatus {
+  empty,
+  loading,
+  error,
+  success,
+}
+
 enum DeleteContainerStatus {
+  empty,
+  loading,
+  error,
+  success,
+}
+
+enum DeleteTeamsStatus {
   empty,
   loading,
   error,
@@ -167,8 +181,10 @@ class AuthRepo extends GetxController {
   final _createTeamsStatus = CreateTeamStatus.empty.obs;
   final _getColletorStatus = GetColletorStatus.empty.obs;
   final _getTeamsStatus = GetTeamStatus.empty.obs;
+  final _deleteTeamsStatus = DeleteTeamsStatus.empty.obs;
   final _getContainerStatus = GetContainerStatus.empty.obs;
   final _updateContainerStatus = UpdateContainerStatus.empty.obs;
+  final _updateTeamStatus = UpdateTeamStatus.empty.obs;
 
   AuthStatus get authStatus => _authStatus.value;
   SignUpStatus get signUpStatus => _signUpStatus.value;
@@ -189,6 +205,8 @@ class AuthRepo extends GetxController {
       _updateContainerStatus.value;
   DeleteContainerStatus get deleteContainerStatus =>
       _deleteContainerStatus.value;
+  DeleteTeamsStatus get deleteTeamsStatus => _deleteTeamsStatus.value;
+  UpdateTeamStatus get updateTeamStatus => _updateTeamStatus.value;
 
   // User? user;
   final Rx<User?> mUser = Rx(null);
@@ -871,6 +889,59 @@ class AuthRepo extends GetxController {
     }
   }
 
+  Future upadateTeam({required teamId}) async {
+    try {
+      _updateTeamStatus(UpdateTeamStatus.loading);
+
+      var requestBody = {
+        'location': containerLocationController.text.trim(),
+        'team': containerTeamController.text.trim(),
+        'volume': containerVolumeController.text.trim(),
+      };
+      var response = await http.put(
+        Uri.parse(ApiLink.updateTeam),
+        body: jsonEncode({
+          'team_id': teamId,
+          'name': teamNameController.text.trim(),
+        }),
+        //jsonEncode(createCollector.toJson()),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+      print('Collector body is: $requestBody');
+      var json = jsonDecode(response.body);
+      if (kDebugMode) {
+        print('token is $token');
+      }
+      print('Container response is ${response.body}');
+
+      if (json['status'] == 'success') {
+        _updateTeamStatus(UpdateTeamStatus.success);
+        Get.snackbar('Success', 'Container updated successfully!');
+        getTeams();
+        Get.back();
+
+        //Get.to(() => const Dashboard());
+        clear();
+      }
+      print('here');
+      return collectoModelFromJson(response.body);
+    } catch (error) {
+      _updateTeamStatus(UpdateTeamStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('Collector update Error ${error.toString()}');
+      }
+    }
+  }
+
   Future getCollector() async {
     try {
       _getColletorStatus(GetColletorStatus.loading);
@@ -1043,6 +1114,41 @@ class AuthRepo extends GetxController {
               : error.toString());
       if (kDebugMode) {
         print('Collector update Error ${error.toString()}');
+      }
+      print(error);
+    }
+  }
+
+  Future deleteTeam({required teamId}) async {
+    try {
+      _deleteTeamsStatus(DeleteTeamsStatus.loading);
+      final response = await http.delete(
+        Uri.parse("${ApiLink.deleteTeam}/$teamId"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+      var json = jsonDecode(response.body);
+
+      if (json['status'] == 'success') {
+        _deleteTeamsStatus(DeleteTeamsStatus.success);
+        Get.snackbar('Success', 'Team deleted successfully!');
+        getTeams();
+        Get.to(() => const Dashboard());
+      } else {
+        throw Exception('Failed to delete cont');
+      }
+    } catch (error) {
+      _deleteTeamsStatus(DeleteTeamsStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('Team Delete update Error ${error.toString()}');
       }
       print(error);
     }

@@ -282,9 +282,9 @@ class _CardState extends State<TeamPage> {
                                                                           onTap:
                                                                               () {
                                                                             print(item.id);
-                                                                            if (authController.deleteContainerStatus !=
-                                                                                DeleteContainerStatus.loading) {
-                                                                              authController.deleteContainer(containerId: item.id);
+                                                                            if (authController.deleteTeamsStatus !=
+                                                                                DeleteTeamsStatus.loading) {
+                                                                              authController.deleteTeam(teamId: item.id);
                                                                               Get.back();
                                                                             }
                                                                           },
@@ -299,7 +299,7 @@ class _CardState extends State<TeamPage> {
                                                                               borderRadius: BorderRadius.circular(8),
                                                                               color: AppColor().primaryColorPurple,
                                                                             ),
-                                                                            child: (authController.deleteContainerStatus == DeleteContainerStatus.loading)
+                                                                            child: (authController.deleteTeamsStatus == DeleteTeamsStatus.loading)
                                                                                 ? LoadingWidget()
                                                                                 : Center(
                                                                                     child: CustomText(
@@ -379,9 +379,10 @@ class _CardState extends State<TeamPage> {
                                                           ),
                                                           context: context,
                                                           builder: (context) =>
-                                                              CreateContainer(
-                                                                create: 'false',
-                                                                id: item.id
+                                                              CreateTeam(
+                                                                teamCreate:
+                                                                    'false',
+                                                                teamId: item.id
                                                                     .toString(),
                                                               ));
                                                     },
