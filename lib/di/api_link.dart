@@ -26,4 +26,6 @@ class ApiLink {
   static String createTeams = "${baseurl}team/create";
   static String deleteTeam = "${baseurl}team/delete";
   static String updateTeam = "${baseurl}team/update";
+  static String addCollector = "${baseurl}team/add";
+  static String assignContainerToTeam = "${baseurl}container/assign-to-team";
 }

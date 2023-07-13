@@ -25,13 +25,13 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // backgroundColor: AppColor().primaryWhite,
+        backgroundColor: AppColor().primaryWhite,
         body: PageStorage(
           bucket: bucket,
           child: currentScreen,
         ),
         bottomNavigationBar: BottomAppBar(
-          color: AppColor().backGround,
+          color: AppColor().primaryWhite,
           child: Container(
             padding: const EdgeInsets.all(12),
             //   margin: const EdgeInsets.all(10),
@@ -158,7 +158,7 @@ class _DashState extends State<Dash> {
 
   Container CreateBottombar(BuildContext context) {
     return Container(
-      height: 130,
+      height: 150,
       //add ClipRRect widget for Round Corner
       child: ClipRRect(
         borderRadius: const BorderRadius.only(

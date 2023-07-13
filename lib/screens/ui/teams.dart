@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -169,7 +170,8 @@ class _CardState extends State<TeamPage> {
                                                       const Gap(5),
                                                       CustomText(
                                                         title: item.leader1
-                                                            .toString(),
+                                                                ?.firstName ??
+                                                            "No lead",
                                                         color: AppColor()
                                                             .primaryColorGreen,
                                                         size: 14,
@@ -190,7 +192,8 @@ class _CardState extends State<TeamPage> {
                                                       const Gap(5),
                                                       CustomText(
                                                         title: item.leader2
-                                                            .toString(),
+                                                                ?.firstName ??
+                                                            "No lead",
                                                         color: AppColor()
                                                             .primaryColorGreen,
                                                         size: 14,
@@ -209,6 +212,7 @@ class _CardState extends State<TeamPage> {
                                                         weight: FontWeight.w800,
                                                       ),
                                                       const Gap(5),
+
                                                       // CustomText(
                                                       //   title: item.createdAt
                                                       //       .toString(),
@@ -386,28 +390,24 @@ class _CardState extends State<TeamPage> {
                                                                     .toString(),
                                                               ));
                                                     },
-                                                    child: Expanded(
-                                                      child: Container(
-                                                        height: 25,
-                                                        width: 50,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(8),
-                                                          color: AppColor()
-                                                              .primaryColorGreen,
-                                                        ),
-                                                        child: Center(
-                                                            child: CustomText(
-                                                          title: 'Edit',
-                                                          color: AppColor()
-                                                              .primaryWhite,
-                                                          weight:
-                                                              FontWeight.w600,
-                                                          size: 12,
-                                                        )),
+                                                    child: Container(
+                                                      height: 25,
+                                                      width: 50,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        color: AppColor()
+                                                            .primaryColorGreen,
                                                       ),
+                                                      child: Center(
+                                                          child: CustomText(
+                                                        title: 'Edit',
+                                                        color: AppColor()
+                                                            .primaryWhite,
+                                                        weight: FontWeight.w600,
+                                                        size: 12,
+                                                      )),
                                                     ),
                                                   ),
                                                 ],
@@ -433,3 +433,5 @@ class _CardState extends State<TeamPage> {
     );
   }
 }
+
+

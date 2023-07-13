@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.halal_design">
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="halal_design"
+        android:label="Waste Manager"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

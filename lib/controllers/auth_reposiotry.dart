@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:halal_design/di/api_link.dart';
 import 'package:halal_design/di/shared_pref.dart';
 import 'package:halal_design/models/collector_list.dart';
@@ -22,6 +23,20 @@ enum GetTeamStatus { empty, loading, error, success, available }
 enum GetContainerStatus { empty, loading, error, success, available }
 
 enum CreateColletorStatus {
+  empty,
+  loading,
+  error,
+  success,
+}
+
+enum AssignTeamToContainerStatus {
+  empty,
+  loading,
+  error,
+  success,
+}
+
+enum AddColletorStatus {
   empty,
   loading,
   error,
@@ -185,6 +200,8 @@ class AuthRepo extends GetxController {
   final _getContainerStatus = GetContainerStatus.empty.obs;
   final _updateContainerStatus = UpdateContainerStatus.empty.obs;
   final _updateTeamStatus = UpdateTeamStatus.empty.obs;
+  final _addColletorStatus = AddColletorStatus.empty.obs;
+  final _assignTeamToContainerStatus = AssignTeamToContainerStatus.empty.obs;
 
   AuthStatus get authStatus => _authStatus.value;
   SignUpStatus get signUpStatus => _signUpStatus.value;
@@ -207,6 +224,9 @@ class AuthRepo extends GetxController {
       _deleteContainerStatus.value;
   DeleteTeamsStatus get deleteTeamsStatus => _deleteTeamsStatus.value;
   UpdateTeamStatus get updateTeamStatus => _updateTeamStatus.value;
+  AddColletorStatus get addColletorStatus => _addColletorStatus.value;
+  AssignTeamToContainerStatus get assignTeamToContainerStatus =>
+      _assignTeamToContainerStatus.value;
 
   // User? user;
   final Rx<User?> mUser = Rx(null);
@@ -740,7 +760,7 @@ class AuthRepo extends GetxController {
     }
   }
 
-  Future createContainer() async {
+  Future createContainer({required lat, required lon}) async {
     try {
       _createContainerStatus(CreateContainerStatus.loading);
 
@@ -753,8 +773,9 @@ class AuthRepo extends GetxController {
         Uri.parse(ApiLink.createContainer),
         body: jsonEncode({
           'location': containerLocationController.text.trim(),
-          'team': containerTeamController.text.trim(),
           'volume': containerVolumeController.text.trim(),
+          'latitude': lat,
+          'longitude': lon,
         }),
         //jsonEncode(createCollector.toJson()),
         headers: {
@@ -791,21 +812,64 @@ class AuthRepo extends GetxController {
     }
   }
 
-  Future upadateContainer({required containerId}) async {
+  Future assignContainerToTeam({required teamName, required id}) async {
     try {
-      _updateContainerStatus(UpdateContainerStatus.loading);
+      _assignTeamToContainerStatus(AssignTeamToContainerStatus.loading);
+
+      var response = await http.post(
+        Uri.parse(ApiLink.assignContainerToTeam),
+        body: jsonEncode({
+          'team_name': teamName,
+          'container_id': id,
+        }),
+        //jsonEncode(createCollector.toJson()),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+
+      var json = jsonDecode(response.body);
+      if (kDebugMode) {
+        print('token is $token');
+      }
+      print('assign team response is ${response.body}');
+
+      if (json['status'] == 'success') {
+        _assignTeamToContainerStatus(AssignTeamToContainerStatus.success);
+        Get.snackbar('Success', 'Team assigned successfully!');
+      }
+      print('here');
+    } catch (error) {
+      _assignTeamToContainerStatus(AssignTeamToContainerStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('Collector creation Error ${error.toString()}');
+      }
+    }
+  }
+
+  Future addCollector(
+      {required collectorID, required position, required teamName}) async {
+    try {
+      _addColletorStatus(AddColletorStatus.loading);
 
       var requestBody = {
-        'location': containerLocationController.text.trim(),
-        'team': containerTeamController.text.trim(),
-        'volume': containerVolumeController.text.trim(),
+        'team_name': teamName,
+        'position': position,
+        'collector_id': collectorID,
       };
       var response = await http.put(
-        Uri.parse(ApiLink.updateContainer),
+        Uri.parse(ApiLink.addCollector),
         body: jsonEncode({
-          'container_id': containerId,
-          'team': containerTeamController.text.trim(),
-          'volume': containerVolumeController.text.trim(),
+          'team_name': teamName,
+          'position': position,
+          'collector_id': collectorID,
         }),
         //jsonEncode(createCollector.toJson()),
         headers: {
@@ -814,6 +878,76 @@ class AuthRepo extends GetxController {
         },
       );
       print('Collector body is: $requestBody');
+      var json = jsonDecode(response.body);
+      if (kDebugMode) {
+        print('token is $token');
+      }
+
+      print('Add collector response is ${response.body}');
+
+      if (json['status'] == 'success') {
+        _addColletorStatus(AddColletorStatus.success);
+        Fluttertoast.showToast(
+          msg: "Container updated successfully!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Get.snackbar('Success', 'Container updated successfully!');
+        Get.back();
+
+        //Get.to(() => const Dashboard());
+        clear();
+      }
+      Fluttertoast.showToast(
+        msg: "${json['status']['message']}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      _addColletorStatus(AddColletorStatus.error);
+      Get.snackbar(
+          'Error',
+          error.toString() ==
+                  "Failed host lookup: 'smart-waste-system.herokuapp.com'"
+              ? 'No internet connection!'
+              : error.toString());
+      if (kDebugMode) {
+        print('Collector update Error ${error.toString()}');
+        Get.back();
+      }
+    }
+  }
+
+  Future upadateContainer({
+    required containerId,
+    required teamName,
+  }) async {
+    try {
+      _updateContainerStatus(UpdateContainerStatus.loading);
+
+      var response = await http.put(
+        Uri.parse(ApiLink.updateContainer),
+        body: jsonEncode({
+          'container_id': containerId,
+          'team': teamName,
+          'volume': containerVolumeController.text.trim(),
+          'location': containerLocationController.text.trim(),
+        }),
+        //jsonEncode(createCollector.toJson()),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+
       var json = jsonDecode(response.body);
       if (kDebugMode) {
         print('token is $token');
@@ -1003,6 +1137,7 @@ class AuthRepo extends GetxController {
         },
       );
       print('here 1');
+
       var json = jsonDecode(response.body);
       if (kDebugMode) {
         print(response.body);

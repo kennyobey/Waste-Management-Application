@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -17,19 +19,62 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void getLocation() async {
-    await Geolocator.checkPermission();
-    await Geolocator.requestPermission();
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    print(position);
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
-  void getAddress() async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(7.552956, 4.458804);
-    print(placemarks);
+  Future<void> GetAddressFromLatLong(Position position) async {
+    List<Placemark> placemark =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+    print(placemark);
+    Placemark place = placemark[0];
+    address =
+        '${place.street}, ${place.subLocality} ${place.locality}, ${place.country}';
+    setState(() {});
   }
+
+  // void getLocation() async {
+  //   await Geolocator.checkPermission();
+  //   await Geolocator.requestPermission();
+  //   Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high);
+  //   print(position);
+  // }
+
+  // void getAddress() async {
+  //   List<Placemark> placemarks =
+  //       await placemarkFromCoordinates(37.78583, -122.406417);
+  //   print(placemarks);
+  //   Placemark place = placemarks[0];
+  //   address = ', ${place.street}, ${place.subLocality} ${place.locality}';
+  //   setState(() {});
+  // }
+
+  String? locaion = "Lat and Long";
+  String? address = "Address";
 
   final authController = Get.put(AuthRepo());
   @override
@@ -127,14 +172,14 @@ class _HomePageState extends State<HomePage> {
                                 title: 'Role:',
                                 color: AppColor().primaryWhite,
                                 size: 12,
-                                weight: FontWeight.w400,
+                                weight: FontWeight.w800,
                               ),
                               const Gap(5),
                               CustomText(
                                 title: authController.user!.role!.toUpperCase(),
                                 color: AppColor().primaryWhite,
                                 size: 10,
-                                weight: FontWeight.w700,
+                                weight: FontWeight.w500,
                               ),
                               // const Spacer(),
                               // Container(
@@ -171,14 +216,14 @@ class _HomePageState extends State<HomePage> {
                                 title: 'Phone No',
                                 color: AppColor().primaryWhite,
                                 size: 12,
-                                weight: FontWeight.w400,
+                                weight: FontWeight.w800,
                               ),
                               const Gap(10),
                               CustomText(
                                 title: '${authController.user!.phone}',
                                 color: AppColor().primaryWhite,
                                 size: 14,
-                                weight: FontWeight.w400,
+                                weight: FontWeight.w500,
                               ),
                               const Gap(5),
                               // Icon(
@@ -194,14 +239,14 @@ class _HomePageState extends State<HomePage> {
                                 title: 'Address:',
                                 color: AppColor().primaryWhite,
                                 size: 12,
-                                weight: FontWeight.w400,
+                                weight: FontWeight.w800,
                               ),
                               const Gap(10),
                               CustomText(
                                 title: authController.user!.address,
                                 color: AppColor().primaryWhite,
                                 size: 14,
-                                weight: FontWeight.w400,
+                                weight: FontWeight.w500,
                               ),
                               //const Spacer(),
                               // SvgPicture.asset(
@@ -390,11 +435,46 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  const Gap(10),
+                  CustomText(
+                    title: 'Location',
+                    color: AppColor().primaryDark,
+                    size: 16,
+                    weight: FontWeight.w600,
+                  ),
+                  const Gap(10),
+                  CustomText(
+                    title: locaion,
+                    color: AppColor().primaryColorPurple,
+                    size: 14,
+                    weight: FontWeight.w400,
+                  ),
+                  const Gap(10),
+                  CustomText(
+                    title: 'Location',
+                    color: AppColor().primaryDark,
+                    size: 16,
+                    weight: FontWeight.w600,
+                  ),
+                  const Gap(10),
+                  CustomText(
+                    title: address,
+                    color: AppColor().primaryColorPurple,
+                    size: 14,
+                    weight: FontWeight.w400,
+                  ),
                   const Gap(15),
                   InkWell(
-                    onTap: () {
-                      getLocation();
-                      getAddress();
+                    onTap: () async {
+                      Position position = await _determinePosition();
+                      print("Longitude ${position.latitude}");
+                      print("Latitude ${position.longitude}");
+                      locaion =
+                          "Latitude : ${position.latitude} and Longitude: ${position.longitude}";
+                      GetAddressFromLatLong(position);
+                      setState(() {});
+                      // getLocation();
+                      // getAddress();
                     },
                     child: Container(
                       height: 50,

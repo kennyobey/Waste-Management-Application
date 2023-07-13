@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:halal_design/controllers/auth_reposiotry.dart';
@@ -330,7 +333,7 @@ class CreateTeam extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: teamCreate == 'false' ? 250 : 320,
+        height: teamCreate == 'false' ? 260 : 340,
         child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: Get.height * 0.025,
@@ -461,18 +464,66 @@ class CreateTeam extends StatelessWidget {
   }
 }
 
-class CreateContainer extends StatelessWidget {
+class CreateContainer extends StatefulWidget {
   final String? create;
   final String? id;
-  CreateContainer({super.key, this.create, this.id});
+  const CreateContainer({super.key, this.create, this.id});
+
+  @override
+  State<CreateContainer> createState() => _CreateContainerState();
+}
+
+class _CreateContainerState extends State<CreateContainer> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<void> GetAddressFromLatLong(Position position) async {
+    List<Placemark> placemark =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+    print(placemark);
+    Placemark place = placemark[0];
+    address =
+        '${place.street}, ${place.subLocality} ${place.locality}, ${place.country}';
+    setState(() {});
+  }
+
+  String? locaion = "Lat and Long";
+  String? address = "Address";
+
   final authController = Get.put(AuthRepo());
+  String? selectedTeamName;
+
   // var item = authController.getContainerList[index];
   @override
   Widget build(BuildContext context) {
-    print("ID is ${id}");
+    print("ID is ${widget.id}");
     return SizedBox(
-        height: create == "false" ? 340 : 420,
+        height: widget.create == "false" ? 500 : 500,
         child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: Get.height * 0.025,
@@ -486,7 +537,7 @@ class CreateContainer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomText(
-                        title: create == "false"
+                        title: widget.create == "false"
                             ? "Update Container"
                             : 'Create Container',
                         color: AppColor().primaryDark,
@@ -495,30 +546,26 @@ class CreateContainer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  create == "false" ? Container() : Gap(Get.height * 0.01),
-                  create == "false"
-                      ? Container()
-                      : CustomText(
-                          title: 'Container Location',
-                          color: AppColor().greyColor,
-                          size: 14,
-                          weight: FontWeight.w500,
-                        ),
                   Gap(Get.height * 0.01),
-                  create == "false"
-                      ? Container()
-                      : CustomTextField(
-                          textEditingController:
-                              authController.containerLocationController,
-                          hint: "Container Location",
-                          hintColor: AppColor().greyColor.withOpacity(0.3),
-                          validate: (value) {
-                            if (value!.isEmpty) {
-                              return 'Container Location must not be empty';
-                            }
-                            return null;
-                          },
-                        ),
+                  CustomText(
+                    title: 'Container Location',
+                    color: AppColor().greyColor,
+                    size: 14,
+                    weight: FontWeight.w500,
+                  ),
+                  Gap(Get.height * 0.01),
+                  CustomTextField(
+                    textEditingController:
+                        authController.containerLocationController,
+                    hint: "Container Location",
+                    hintColor: AppColor().greyColor.withOpacity(0.3),
+                    validate: (value) {
+                      if (value!.isEmpty) {
+                        return 'Container Location must not be empty';
+                      }
+                      return null;
+                    },
+                  ),
                   Gap(Get.height * 0.015),
                   CustomText(
                     title: 'Container Volume',
@@ -541,6 +588,55 @@ class CreateContainer extends StatelessWidget {
                     },
                   ),
                   Gap(Get.height * 0.015),
+                  widget.create == "false"
+                      ? Container()
+                      : CustomText(
+                          title: 'Address',
+                          color: AppColor().primaryDark,
+                          size: 16,
+                          weight: FontWeight.w600,
+                        ),
+                  widget.create == "false" ? Container() : const Gap(10),
+                  widget.create == "false"
+                      ? Container()
+                      : CustomText(
+                          title: address,
+                          color: AppColor().primaryColorPurple,
+                          size: 14,
+                          weight: FontWeight.w400,
+                        ),
+                  Gap(Get.height * 0.015),
+                  widget.create == "false"
+                      ? Container()
+                      : InkWell(
+                          onTap: () async {
+                            Position position = await _determinePosition();
+                            print("Longitude ${position.latitude}");
+                            print("Latitude ${position.longitude}");
+                            locaion =
+                                "Latitude : ${position.latitude} and Longitude: ${position.longitude}";
+                            GetAddressFromLatLong(position);
+                            setState(() {});
+                            // getLocation();
+                            // getAddress();
+                          },
+                          child: Container(
+                            height: 50,
+                            width: Get.width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColor().primaryWhite,
+                                border: Border.all(
+                                    color: AppColor().primaryColorPurple)),
+                            child: Center(
+                                child: CustomText(
+                              title: 'Click here to get Loctaion',
+                              color: AppColor().primaryColorPurple,
+                              weight: FontWeight.w600,
+                              size: 16,
+                            )),
+                          ),
+                        ),
                   CustomText(
                     title: 'Team Name',
                     color: AppColor().greyColor,
@@ -548,28 +644,62 @@ class CreateContainer extends StatelessWidget {
                     weight: FontWeight.w500,
                   ),
                   Gap(Get.height * 0.01),
-                  CustomTextField(
-                    textEditingController:
-                        authController.containerTeamController,
-                    hint: "Create Team",
-                    hintColor: AppColor().greyColor.withOpacity(0.3),
-                    validate: (value) {
-                      if (value!.isEmpty) {
-                        return 'Last Name must not be empty';
-                      }
-                      return null;
-                    },
+                  Container(
+                    width: Get.width,
+                    height: 58,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: AppColor().greyColor)),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton2(
+                        hint: Text(
+                          'Team Name',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).hintColor,
+                          ),
+                        ),
+                        items: authController.getTeamsList
+                            .map((category) => DropdownMenuItem(
+                                  value: category.name,
+                                  child: Text(
+                                    category.name!,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                        value: selectedTeamName,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedTeamName = value as String;
+                          });
+                        },
+                        buttonStyleData: const ButtonStyleData(
+                          height: 40,
+                          width: 140,
+                        ),
+                        menuItemStyleData: const MenuItemStyleData(
+                          height: 40,
+                        ),
+                      ),
+                    ),
                   ),
                   Gap(Get.height * 0.02),
-                  create != "false"
+                  widget.create != "false"
                       ? Obx(() {
                           return InkWell(
-                            onTap: () {
+                            onTap: () async {
                               // print('Users: ${createCollector.toJson()}');
+                              Position position = await _determinePosition();
                               print('here on sending page');
                               if (authController.createContainerStatus !=
                                   CreateContainerStatus.loading) {
-                                authController.createContainer();
+                                authController.createContainer(
+                                    lat: position.latitude,
+                                    lon: position.longitude);
                                 Get.back();
                               }
                             },
@@ -601,7 +731,7 @@ class CreateContainer extends StatelessWidget {
                               if (authController.updateContainerStatus !=
                                   UpdateContainerStatus.loading) {
                                 authController.upadateContainer(
-                                    containerId: id);
+                                    containerId: widget.id, teamName: null);
                                 Get.back();
                               }
                             },
