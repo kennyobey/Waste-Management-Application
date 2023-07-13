@@ -1,15 +1,11 @@
-import 'dart:convert';
+
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:halal_design/controllers/auth_reposiotry.dart';
-import 'package:halal_design/di/api_link.dart';
 import 'package:halal_design/di/shared_pref.dart';
-import 'package:halal_design/models/collector_model.dart';
 import 'package:halal_design/models/sign_in_model.dart';
 
-import 'package:http/http.dart' as http;
 
 // enum CreateColletorStatus {
 //   empty,

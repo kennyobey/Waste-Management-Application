@@ -13,7 +13,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:halal_design/controllers/auth_reposiotry.dart';
 import 'package:halal_design/screens/constants/color.dart';
 import 'package:halal_design/screens/function/function.dart';
-import 'package:halal_design/screens/ui/dashboard.dart';
 import 'package:halal_design/screens/widget/custom_text.dart';
 import 'package:halal_design/screens/widget/loading.dart';
 import 'package:halal_design/screens/widget/text_field_widget.dart';
